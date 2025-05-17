@@ -14,9 +14,10 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
-        return view('auth.login');
+        // Arahkan langsung ke halaman login customer dengan URL absolut
+        return redirect('/customer/login');
     }
 
     /**
@@ -28,7 +29,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirect berdasarkan role
+        if (Auth::user()->is_admin) {
+            return redirect('/admin');
+        }
+
+        return redirect('/customer');
     }
 
     /**

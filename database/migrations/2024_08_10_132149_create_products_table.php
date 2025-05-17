@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('slug');
             $table->string('thumbnail');
             $table->text('about');
-            $table->unsignedBigInteger('price');
+            $table->unsignedBigInteger('price'); // Harga per 3 hari
+            $table->unsignedInteger('stock')->default(0); // Menambahkan kolom stok
+            $table->boolean('can_multi_quantity')->default(false); // Menandai produk yang bisa multiple qty
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->foreignId('brand_id')->constrained()->cascadeOnDelete();
             $table->softDeletes();

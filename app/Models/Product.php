@@ -22,6 +22,8 @@ class Product extends Model
         'category_id',
         'brand_id',
         'price',
+        'stock',
+        'can_multi_quantity',
     ];
 
     public function setNameAttribute($value)
@@ -32,7 +34,58 @@ class Product extends Model
 
     protected $casts = [
         'price' => MoneyCast::class,
+        'can_multi_quantity' => 'boolean',
     ];
+
+    /**
+     * Check if product is available (stock > 0)
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->stock > 0;
+    }
+
+    /**
+     * Calculate rental price based on duration (in days)
+     * Price is for every 3 days
+     *
+     * @param int $days
+     * @return float
+     */
+    public function calculateRentalPrice($days)
+    {
+        // Calculate how many 3-day periods
+        $periods = ceil($days / 3);
+        return $this->price * $periods;
+    }
+
+    /**
+     * Decrease stock when product is rented
+     *
+     * @param int $quantity
+     * @return void
+     */
+    public function decreaseStock($quantity = 1)
+    {
+        if ($this->stock >= $quantity) {
+            $this->stock -= $quantity;
+            $this->save();
+        }
+    }
+
+    /**
+     * Increase stock when product is returned
+     *
+     * @param int $quantity
+     * @return void
+     */
+    public function increaseStock($quantity = 1)
+    {
+        $this->stock += $quantity;
+        $this->save();
+    }
 
     public function category(): BelongsTo
     {

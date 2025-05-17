@@ -19,7 +19,10 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
-    public static function form(Form $form): Form 
+    protected static ?string $navigationGroup = 'Katalog';
+    protected static ?int $navigationSort = 1;
+
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -41,7 +44,7 @@ class CategoryResource extends Resource
                 //
                 Tables\Columns\TextColumn::make('name')
                 ->searchable(),
-                
+
                 Tables\Columns\TextColumn::make('slug'),
 
                 Tables\Columns\ImageColumn::make('icon'),

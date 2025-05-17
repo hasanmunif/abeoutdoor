@@ -1,4 +1,4 @@
- <?php
+<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,19 +13,30 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('name');
             $table->string('trx_id');
             $table->string('phone_number');
-            $table->string('proof');
+            $table->string('proof')->nullable();
             $table->text('address');
             $table->date('started_at');
             $table->unsignedBigInteger('duration');
             $table->date('ended_at');
             $table->boolean('is_paid');
-            $table->enum('delivery_type', ['pickup', 'home_delivery'])->default('pickup');
+            $table->enum('status', [
+                'menunggu konfirmasi',
+                'diproses',
+                'selesai',
+                'dibatalkan',
+                'menunggu pembayaran'
+            ])->default('menunggu konfirmasi');
+            $table->enum('delivery_type', ['pickup', 'delivery'])->default('pickup');
             $table->unsignedBigInteger('total_amount');
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('payment_method');
+            $table->string('transaction_group_id')->nullable();
             $table->foreignId('store_id')->constrained()->cascadeOnDelete();
+            $table->unsignedInteger('quantity')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

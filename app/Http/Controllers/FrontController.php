@@ -27,13 +27,28 @@ class FrontController extends Controller
         return view('front.brands', compact('category'));
     }
 
-    public function brand(Brand $brand){
+    public function brand(Brand $brand)
+    {
+        // Dapatkan category_id dari session
         $category_id = session()->get('category_id');
 
+        // PERBAIKAN: Jika tidak ada category_id dalam session atau ingin menampilkan semua produk
+        // Ambil semua produk brand tanpa filter kategori
         $products = Product::where('brand_id', $brand->id)
-        ->where('category_id', $category_id)
-        ->latest()
-        ->get();
+            ->latest()
+            ->get();
+
+        // TAMBAHAN: Buat variable untuk produk dalam kategori tertentu
+        $productsInCategory = [];
+        if ($category_id) {
+            $productsInCategory = $products->where('category_id', $category_id);
+        }
+
+        // Jika ingin tetap menampilkan filter berdasarkan kategori aktif:
+        // $products = $productsInCategory;
+
+        // Atau untuk menampilkan semua produk brand tanpa batasan kategori:
+        // Tetap menggunakan $products yang sudah diambil
 
         return view('front.gadgets', compact('brand', 'products'));
     }
@@ -41,89 +56,6 @@ class FrontController extends Controller
     public function details(Product $product){
         return view('front.details', compact('product'));
     }
-
-    public function booking(Product $product){
-        $stores = Store::all();
-        return view('front.booking', compact('product', 'stores'));
-    }
-
-    public function booking_save(StoreBookingRequest $request, Product $product){
-        session()->put('product_id', $product->id);
-
-        $bookingData = $request->only(['duration', 'started_at', 'store_id', 'delivery_type', 'address']);
-
-        session($bookingData);
-
-        return redirect()->route('front.checkout', $product->slug);
-    }
-
-    public function checkout(Product $product){
-        $duration = session('duration');
-
-        $insurance = 900000;
-        $ppn = 0.11;
-        $price = $product->price;
-
-        $subTotal = $price * $duration;
-        $totalPpn = $subTotal * $ppn;
-        $grandTotal = $subTotal + $totalPpn + $insurance;
-
-        return view('front.checkout', compact('product', 'subTotal', 'totalPpn', 'grandTotal', 'insurance'));
-    }
-
-    public function checkout_store(StorePaymentRequest $request){ 
-        $bookingData = session()->only(['duration', 'started_at', 'store_id', 'delivery_type', 'address', 'product_id']);
-
-        $duration = (int) $bookingData['duration'];
-        $startedDate = Carbon::parse($bookingData['started_at']);
-
-        $productDetails = Product::find($bookingData['product_id']);
-        if (!$productDetails) {
-            return redirect()->back()->withErrors(['product_id' => 'Product not found.']);
-        }
-
-        $insurance = 900000;
-        $ppn = 0.11;
-        $price = $productDetails->price;
-
-        $subTotal = $price * $duration;
-        $totalPpn = $subTotal * $ppn;
-        $grandTotal = $subTotal + $totalPpn + $insurance;
-
-        $bookingTransactionId = null;
-
-        DB::transaction(function() use ($request, &$bookingTransactionId, $duration, $bookingData,
-        $grandTotal, $productDetails, $startedDate){
-            
-            $validated = $request->validated();
-
-            if ($request->hasFile('proof')){
-                $proofPath = $request->file('proof')->store('proofs', 'public');
-                $validated['proof'] = $proofPath;
-            }
-
-            $endedDate = $startedDate->copy()->addDays($duration);
-
-            $validated['started_at'] = $startedDate;
-            $validated['ended_at'] = $endedDate;
-            $validated['duration'] = $duration;
-            $validated['total_amount'] = $grandTotal;
-            $validated['store_id'] = $bookingData['store_id'];
-            $validated['product_id'] = $productDetails->id;
-            $validated['delivery_type'] = $bookingData['delivery_type'];
-            $validated['address'] = $bookingData['address'];
-            $validated['is_paid'] = false;
-            $validated['trx_id'] = Transaction::generateUniqueTrxId();
-
-            $newBooking = Transaction::create($validated);
-
-            $bookingTransactionId = $newBooking->id;
-
-        });
-
-        return redirect()->route('front.success.booking', $bookingTransactionId);
-    }
-
 
     public function success_booking(Transaction $transaction){
         return view('front.success_booking', compact('transaction'));
@@ -138,7 +70,7 @@ class FrontController extends Controller
             'trx_id' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:255'],
         ]);
-        
+
         $trx_id = $request->input('trx_id');
         $phone_number = $request->input('phone_number');
 
@@ -151,12 +83,149 @@ class FrontController extends Controller
             return redirect()->back()->withErrors(['error' => 'Transaction not found.']);
         }
 
-        $ppn = 0.11;
-        $insurance = 900000;
-        $totalPpn = $details->product->price * $ppn;
         $duration = $details->duration;
-        $subTotal = $details->product->price * $duration;
+        $periods = ceil($duration / 3);
+        $subTotal = $details->product->price * $periods;
 
-        return view('front.transaction_details', compact('details', 'totalPpn', 'subTotal', 'insurance'));
+        return view('front.transaction_details', compact('details', 'subTotal'));
+    }
+
+    /**
+     * Checkout for multiple items from cart
+     */
+    public function checkoutMultiple()
+    {
+        $checkoutItems = session('checkout_items', []);
+
+        if (empty($checkoutItems)) {
+            return redirect()->route('cart.index')->with('error', 'Tidak ada item yang dipilih untuk checkout');
+        }
+
+        $items = [];
+        $totalPrice = 0;
+
+        foreach ($checkoutItems as $id => $details) {
+            $product = Product::find($id);
+
+            if (!$product) {
+                continue;
+            }
+
+            // Hitung periods (kelipatan 3 hari)
+            $days = $details['days'] ?? 3;
+            $periods = ceil($days / 3);
+
+            // Hitung subtotal
+            $subtotal = $product->price * $periods * $details['quantity'];
+
+            $items[] = [
+                'product' => $product,
+                'quantity' => $details['quantity'],
+                'days' => $days,
+                'subtotal' => $subtotal
+            ];
+
+            $totalPrice += $subtotal;
+        }
+
+        // HAPUS perhitungan pajak dan asuransi
+        // $ppn = $totalPrice * 0.11;
+        // $insurance = 900000;
+        // $grandTotal = $totalPrice + $ppn + $insurance;
+
+        $grandTotal = $totalPrice; // Total harga = total price
+
+        // return view('front.checkout_multiple', compact('items', 'totalPrice', 'ppn', 'insurance', 'grandTotal'));
+        return view('front.checkout_multiple', compact('items', 'totalPrice', 'grandTotal'));
+    }
+
+    /**
+     * Process multiple checkout
+     */
+    public function checkoutMultipleStore(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'store_id' => 'required|exists:stores,id',
+            'started_at' => 'required|date|after_or_equal:today',
+            'proof' => 'required|image|max:2048',
+        ]);
+
+        $checkoutItems = session('checkout_items', []);
+
+        if (empty($checkoutItems)) {
+            return redirect()->route('cart.index')->with('error', 'Tidak ada item yang dipilih untuk checkout');
+        }
+
+        $transactions = [];
+
+        DB::transaction(function() use ($request, $checkoutItems, &$transactions) {
+            foreach ($checkoutItems as $id => $details) {
+                $product = Product::find($id);
+
+                if (!$product || $product->stock < $details['quantity']) {
+                    continue;
+                }
+
+                $days = $details['days'] ?? 3;
+                $periods = ceil($days / 3);
+                $subtotal = $product->price * $periods * $details['quantity'];
+
+                // HAPUS perhitungan pajak dan asuransi
+                // $ppn = $subtotal * 0.11;
+                // $insurance = 900000;
+                // $totalAmount = $subtotal + $ppn + $insurance;
+
+                $totalAmount = $subtotal; // Total amount = subtotal
+
+                $startedDate = Carbon::parse($request->started_at);
+                $endedDate = $startedDate->copy()->addDays($days);
+
+                // Upload bukti pembayaran
+                $proofPath = $request->file('proof')->store('proofs', 'public');
+
+                // Buat transaksi
+                $transaction = Transaction::create([
+                    'name' => $request->name,
+                    'phone_number' => $request->phone_number,
+                    'trx_id' => Transaction::generateUniqueTrxId(),
+                    'address' => $request->address ?? 'Pickup di toko',
+                    'total_amount' => $totalAmount,
+                    'duration' => $days,
+                    'product_id' => $product->id,
+                    'quantity' => $details['quantity'],
+                    'store_id' => $request->store_id,
+                    'started_at' => $startedDate,
+                    'ended_at' => $endedDate,
+                    'delivery_type' => $request->delivery_type ?? 'pickup',
+                    'proof' => $proofPath,
+                    'is_paid' => false,
+                ]);
+
+                // Kurangi stok
+                $product->decreaseStock($details['quantity']);
+
+                $transactions[] = $transaction->id;
+
+                // Hapus item dari cart
+                $cart = session('cart', []);
+                if (isset($cart[$id])) {
+                    unset($cart[$id]);
+                }
+                session()->put('cart', $cart);
+            }
+        });
+
+        // Hapus checkout items dari session
+        session()->forget('checkout_items');
+
+        // Redirect ke halaman sukses dengan ID transaksi pertama
+        if (!empty($transactions)) {
+            return redirect()->route('front.success.booking', $transactions[0])
+                ->with('success', 'Pesanan berhasil dibuat. Terima kasih!');
+        }
+
+        return redirect()->route('cart.index')->with('error', 'Terjadi kesalahan saat checkout');
     }
 }

@@ -9,15 +9,34 @@ const totalPrice = document.getElementById("Total");
 const productPrice = document.getElementById("productPrice");
 const defaultPrice = productPrice.value;
 
-function updateTotalPrice() {
-    let subTotal = days.value * defaultPrice;
-    totalPrice.innerText = "Rp " + subTotal.toLocaleString('id-ID');
+// Fungsi untuk memastikan jumlah hari selalu kelipatan 3
+function adjustDaysToMultipleOfThree(currentDays) {
+    // Minimal 3 hari, dan kelipatan 3
+    return Math.max(3, Math.ceil(currentDays / 3) * 3);
 }
 
-minus.addEventListener("click", function() {
+function updateTotalPrice() {
+    // Pastikan hari adalah kelipatan 3
+    let dayValue = parseInt(days.value);
+    let adjustedDays = adjustDaysToMultipleOfThree(dayValue);
+
+    if (dayValue !== adjustedDays) {
+        days.value = adjustedDays;
+        count.innerText = adjustedDays;
+    }
+
+    // Hitung berapa periode 3 hari
+    let periods = Math.ceil(adjustedDays / 3);
+    let subTotal = periods * defaultPrice;
+
+    totalPrice.innerText = "Rp " + subTotal.toLocaleString("id-ID");
+}
+
+minus.addEventListener("click", function () {
     let currentCount = parseInt(count.innerText);
-    if (currentCount > 1) {
-        currentCount -= 1;
+    if (currentCount > 3) {
+        // Kurangi 3 hari
+        currentCount -= 3;
         count.innerText = currentCount;
         days.value = currentCount;
         duration.value = currentCount;
@@ -25,12 +44,22 @@ minus.addEventListener("click", function() {
     }
 });
 
-plus.addEventListener("click", function() {
+plus.addEventListener("click", function () {
     let currentCount = parseInt(count.innerText);
-    currentCount += 1;
+    // Tambah 3 hari
+    currentCount += 3;
     count.innerText = currentCount;
     days.value = currentCount;
     duration.value = currentCount;
+    updateTotalPrice();
+});
+
+// Inisialisasi dengan minimal 3 hari
+window.addEventListener("DOMContentLoaded", function () {
+    let minDays = 3;
+    count.innerText = minDays;
+    days.value = minDays;
+    duration.value = minDays;
     updateTotalPrice();
 });
 
@@ -42,16 +71,16 @@ days.addEventListener("change", function () {
 updateTotalPrice();
 
 // funtion date
-const datePicker = document.getElementById('date');
-const btnText = document.getElementById('DateTriggerBtn');
+const datePicker = document.getElementById("date");
+const btnText = document.getElementById("DateTriggerBtn");
 
-datePicker.addEventListener('change', function () {
+datePicker.addEventListener("change", function () {
     if (datePicker.value) {
-        btnText.innerText = datePicker.value
+        btnText.innerText = datePicker.value;
         btnText.classList.add("font-semibold");
     } else {
-        btnText.innerText = "Select date"
-        btnText.classList.remove("font-semibold"); 
+        btnText.innerText = "Select date";
+        btnText.classList.remove("font-semibold");
     }
 });
 
@@ -69,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].classList.remove("active", "ring-2", "ring-[#FCCF2F]");
         }
-        
+
         document.getElementById(pageName).classList.remove("hidden");
         elmnt.classList.add("active", "ring-2", "ring-[#FCCF2F]");
     };
@@ -80,26 +109,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // funtion for changing required atribute
 function toggleRequiredOptions() {
-    const pickupRadio = document.getElementById('Pickup');
-    const deliveryRadio = document.getElementById('Delivery');
-    const deliveryType = document.getElementById('deliveryType');
-    const storeRadios = document.getElementsByName('store');
-    const addressTextarea = document.getElementsByName('address')[0];
+    const pickupRadio = document.getElementById("Pickup");
+    const deliveryRadio = document.getElementById("Delivery");
+    const deliveryType = document.getElementById("deliveryType");
+    const storeRadios = document.getElementsByName("store");
+    const addressTextarea = document.getElementsByName("address")[0];
 
     if (pickupRadio.checked) {
-        storeRadios.forEach(radio => {
+        storeRadios.forEach((radio) => {
             radio.required = true;
         });
         // addressTextarea.required = false;
-        addressTextarea.value = 'Diambil ditoko saja';
-        deliveryType.value = 'pickup';
+        addressTextarea.value = "Diambil ditoko saja";
+        deliveryType.value = "pickup";
     } else if (deliveryRadio.checked) {
-        storeRadios.forEach(radio => {
+        storeRadios.forEach((radio) => {
             radio.required = false;
         });
         // addressTextarea.required = true;
-        addressTextarea.value = '';
-        deliveryType.value = 'home_delivery';
+        addressTextarea.value = "";
+        deliveryType.value = "home_delivery";
         document.querySelector('input[name="store_id"]').value = 1;
     }
 }
+
+// Pastikan store_id terisi sebelum submit
+document
+    .getElementById("booking-form")
+    .addEventListener("submit", function (e) {
+        const storeRadios = document.querySelectorAll('input[name="store_id"]');
+        let storeSelected = false;
+
+        storeRadios.forEach((radio) => {
+            if (radio.checked) {
+                document.getElementById("storeId").value = radio.value;
+                storeSelected = true;
+            }
+        });
+
+        if (!storeSelected) {
+            e.preventDefault();
+            alert("Silakan pilih lokasi pengambilan barang terlebih dahulu");
+        }
+    });

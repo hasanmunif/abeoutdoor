@@ -22,6 +22,9 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Katalog';
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -38,7 +41,20 @@ class ProductResource extends Resource
                 Forms\Components\TextInput::make('price')
                 ->required()
                 ->numeric()
-                ->prefix('IDR'),
+                ->prefix('IDR')
+                ->helperText('Harga per 3 hari sewa'),
+
+                Forms\Components\TextInput::make('stock')
+                ->required()
+                ->numeric()
+                ->default(0)
+                ->minValue(0)
+                ->helperText('Jumlah stok tersedia'),
+
+                Forms\Components\Toggle::make('can_multi_quantity')
+                ->label('Multi Quantity?')
+                ->helperText('Apakah produk ini bisa disewa lebih dari 1 (seperti tenda, kompor, matras, dll)')
+                ->default(false),
 
                 Forms\Components\FileUpload::make('thumbnail')
                 ->required()
@@ -66,7 +82,7 @@ class ProductResource extends Resource
                     })
                     ->searchable()
                     ->preload()
-                    ->required(), 
+                    ->required(),
             ]);
     }
 
@@ -80,6 +96,15 @@ class ProductResource extends Resource
                 Tables\Columns\ImageColumn::make('thumbnail'),
                 Tables\Columns\TextColumn::make('category.name'),
                 Tables\Columns\TextColumn::make('brand.name'),
+                Tables\Columns\TextColumn::make('price')
+                ->money('IDR')
+                ->label('Harga (3 hari)'),
+                Tables\Columns\TextColumn::make('stock')
+                ->sortable()
+                ->label('Stok'),
+                Tables\Columns\IconColumn::make('can_multi_quantity')
+                ->boolean()
+                ->label('Multi Qty'),
             ])
             ->filters([
                 //

@@ -1,0 +1,77 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+✅ 📄 Project Brief (Final — Disempurnakan)
+🎯 Judul Proyek:
+Aplikasi Penyewaan Alat-Alat Outdoor
+🛠 Tech Stack:
+•	Backend: Laravel 11
+•	Frontend: Blade + TailwindCSS + Alpine.js
+•	Database: MySQL
+•	Payment Gateway: Midtrans (Snap)
+•	File Upload: Laravel Filesystem
+•	Authentication: Laravel Breeze (atau Jetstream)
+•	Session/State: Laravel Session
+________________________________________
+✨ Fitur Utama:
+✅ 1. Manajemen Produk & Booking
+•	Lihat produk berdasarkan kategori & brand
+•	Lihat detail produk
+•	Booking produk dengan pilihan lokasi & metode pengiriman
+✅ 2. Checkout & Simulasi Biaya
+•	Hitung subtotal + PPN + biaya asuransi
+•	Estimasi total otomatis sebelum redirect ke Midtrans
+✅ 3. Keranjang (Cart)
+•	Tambah & hapus produk
+•	Hanya produk tertentu yang bisa ditambah jumlahnya (multi-quantity):
+o	✅ Bisa multi qty: tenda, kompor, matras, kursi lipat, tracking pole, sarung tangan, headlamp, gas refill, sleeping bag
+o	❌ Single qty: sepatu, tas, jaket (karena beda brand/jenis)
+•	Checkout bisa dilakukan per item atau sekaligus semua
+✅ 4. Login & Registrasi Pengguna
+•	Autentikasi Laravel Auth
+•	Akses ke fitur histori transaksi & checkout
+✅ 5. Pembayaran Midtrans
+•	Snap integration
+•	Webhook Midtrans otomatis update status
+•	Validasi jika pembayaran sukses → status jadi "paid"
+✅ 6. Riwayat Penyewaan
+•	Hanya bisa diakses oleh user yang login
+•	Menampilkan daftar penyewaan sebelumnya
+•	Termasuk: nama item, jumlah, total bayar, status transaksi, durasi, tanggal penyewaan
+✅ 7. Stok Produk Realtime
+•	Tidak bisa checkout jika stok produk sudah habis
+•	Jumlah stok otomatis berkurang setelah transaksi sukses
+________________________________________
+📊 Fitur Khusus Admin
+Fitur Admin	Deskripsi
+🧾 Data Transaksi	Menampilkan seluruh transaksi termasuk jumlah item per transaksi
+📅 Transaksi Bulanan	Statistik transaksi bulanan (untuk grafik/dashboard)
+________________________________________
+🔄 Alur Penyewaan:
+1.	Pilih produk → Tambah ke keranjang
+2.	Login (jika belum)
+3.	Checkout → Pilih durasi (kelipatan 3 hari) & lokasi
+4.	Validasi total biaya
+5.	Redirect ke Midtrans
+6.	Pembayaran sukses → status = paid
+7.	User bisa cek histori transaksi
+________________________________________
+🔧 Aturan Tambahan & Logika Khusus:
+Aturan Khusus	Penjelasan
+⏱ Durasi penyewaan	Hanya bisa memilih kelipatan 3 hari (3, 6, 9, dst)
+📦 Jumlah per produk terbatas	Hanya beberapa jenis produk yang bisa dibeli lebih dari 1
+📉 Stok otomatis berkurang setelah sewa	Tidak bisa sewa jika stok habis
+📊 Transaksi ditampilkan per bulan	Ditampilkan dalam dashboard admin sebagai statistik bulanan
+________________________________________
+💡 Siap Dilanjutkan:
+Saya bisa bantu kamu bikin hal-hal berikut secara bertahap:
+1.	Struktur tabel & migrasi: users, products, transactions, transaction_items
+2.	Session keranjang: hanya simpan produk dan jumlah dengan aturan yang sesuai
+3.	Halaman frontend: keranjang, checkout, histori penyewaan
+4.	Integrasi Snap Midtrans & webhook
+5.	Validasi durasi (kelipatan 3 hari) & stok
+
+
+FRONTEND MENGGUNAKAN MOBILE FIRST / PWA

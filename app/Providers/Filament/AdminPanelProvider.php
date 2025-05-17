@@ -17,7 +17,12 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\CheckUserIsAdmin;
+use App\Filament\Widgets\DashboardStatsOverview;
+use App\Filament\Widgets\LatestTransactions;
+use Filament\Navigation\NavigationItem;
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -30,6 +35,13 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->navigationItems([
+                NavigationItem::make('Kembali ke Toko')
+                    ->url('/', shouldOpenInNewTab: false)
+                    ->icon('heroicon-o-home')
+                    ->group('Menu')
+                    ->sort(1),
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -37,8 +49,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                DashboardStatsOverview::class,
+                LatestTransactions::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -50,6 +62,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+
             ])
             ->authMiddleware([
                 Authenticate::class,
