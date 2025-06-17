@@ -99,9 +99,9 @@ class TransactionResource extends Resource
 
                 Forms\Components\Select::make('status')
                     ->options([
-                        'menunggu konfirmasi' => 'Menunggu Konfirmasi',
-                        'menunggu pembayaran' => 'Menunggu Pembayaran',
-                        'diproses' => 'Diproses',
+                        // 'menunggu konfirmasi' => 'Menunggu Konfirmasi',
+                        // 'menunggu pembayaran' => 'Menunggu Pembayaran',
+                        // 'diproses' => 'Diproses',
                         'selesai' => 'Selesai',
                         'dibatalkan' => 'Dibatalkan',
                     ])

@@ -208,7 +208,7 @@
                         </svg>
                         @endif
                     </div>
-                    <div class="w-0.5 h-16 bg-gray-200 mt-1"></div>
+                    {{-- <div class="w-0.5 h-16 bg-gray-200 mt-1"></div> --}}
                 </div>
                 <div>
                     <p class="font-semibold">Pembayaran</p>
@@ -216,7 +216,7 @@
                 </div>
             </div>
 
-            <div class="flex gap-3">
+            {{-- <div class="flex gap-3">
                 <div class="flex flex-col items-center">
                     <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                         <!-- No check mark yet -->
@@ -226,7 +226,7 @@
                     <p class="font-semibold">Pesanan Selesai</p>
                     <p class="text-sm text-gray-500">Menunggu</p>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </section>
 

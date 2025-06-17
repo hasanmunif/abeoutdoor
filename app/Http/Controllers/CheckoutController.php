@@ -78,7 +78,7 @@ class CheckoutController extends Controller
         // Validasi data
         $validationRules = [
             'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:15',
+            'phone_number' => 'required|numeric',
             'store_id' => 'required|exists:stores,id',
             'delivery_type' => 'required|in:pickup,delivery',
             'address' => 'required_if:delivery_type,delivery',
@@ -231,7 +231,7 @@ class CheckoutController extends Controller
         // Validasi request
         $request->validate([
             'name' => 'required|string',
-            'phone_number' => 'required|string',
+            'phone_number' => 'required|numeric',
             'store_id' => 'required|exists:stores,id',
             'started_at' => 'required|date|after_or_equal:today',
             'delivery_type' => 'required|in:pickup,delivery',

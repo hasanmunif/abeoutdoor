@@ -16,7 +16,7 @@
 				</div>
 
 				<!-- Menampilkan brand logo dan thumbnail produk -->
-				<div class="w-full flex flex-col items-center gap-4">
+				{{-- <div class="w-full flex flex-col items-center gap-4">
 					<!-- Brand Logo -->
 					<div class="w-24 h-24 bg-[#F8F8F8] rounded-full flex items-center justify-center shadow-sm">
 						<img src="{{Storage::url($transaction->product->brand->logo)}}" alt="Brand Logo" class="w-16 h-16 object-contain" />
@@ -32,7 +32,7 @@
 							<p class="text-sm text-gray-600">{{$transaction->product->brand->name}}</p>
 						</div>
 					</div>
-				</div>
+				</div> --}}
 
 				<div class="flex flex-col gap-2 rounded-2xl overflow-hidden outline outline-1 outline-[#E9E8ED] p-4 w-full">
 					<p class="font-semibold">Booking ID</p>

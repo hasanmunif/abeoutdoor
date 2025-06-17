@@ -4,11 +4,13 @@
     </a>
     <div class="flex items-center gap-4">
         @auth
-            <a href="{{ route('filament.customer.pages.dashboard') }}" class="text-sm font-medium flex items-center gap-1">
+            <a href="{{ auth()->user()->is_admin ? route('filament.admin.pages.dashboard') : route('filament.customer.pages.dashboard') }}" class="text-sm font-medium flex items-center gap-1">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
-                <span class="hidden md:inline">Akun</span>
+                <span class="hidden md:inline">
+                    {{ auth()->user()->is_admin ? 'Admin' : 'Customer' }}
+                </span>
             </a>
         @else
             <a href="{{ route('login') }}" class="text-sm font-medium flex items-center gap-1">

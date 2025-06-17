@@ -27,7 +27,7 @@
 		</a>
 
 		<section id="New" class="flex flex-col gap-[10px] mt-[30px]">
-			<h2 class="font-semibold text-lg leading-[27px] px-5">Brand Terbaru</h2>
+			<h2 class="font-semibold text-lg leading-[27px] px-5">Produk Terbaru</h2>
 			<div class="swiper w-full h-fit">
 				<div class="swiper-wrapper">
 					@forelse($latest_product as $item_latest_product)

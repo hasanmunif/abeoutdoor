@@ -28,6 +28,9 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            // ->brandLogo(asset('assets/images/logos/abe.svg'))
+            ->brandName('Abe Outdoor')
+            ->brandLogoHeight('2rem')
             ->default()
             ->id('admin')
             ->path('admin')

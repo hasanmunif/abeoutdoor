@@ -211,7 +211,7 @@
                             </div>
                             <div>
                                 <p class="font-semibold">Ambil di Toko</p>
-                                <p class="text-sm text-gray-500">Silakan ambil barang sesuai jadwal di lokasi toko yang dipilih</p>
+                                <p class="text-sm text-gray-500">Jl. Telpon No.33, Brubahan, Kranji, Kec. Purwokerto Timur</p>
                             </div>
                         </div>
                         <!-- Hidden input to ensure delivery_type is always "pickup" -->
@@ -239,7 +239,12 @@
                         <div class="w-6 h-6 flex shrink-0">
                             <img src="{{asset('assets/images/icons/call.svg')}}" alt="icon">
                         </div>
-                        <input type="tel" name="phone_number" id="phone" class="appearance-none outline-none rounded-2xl w-full placeholder:font-normal placeholder:text-black font-semibold text-sm leading-[24px]" placeholder="Write your phone number" required>
+                        <input type="tel" name="phone_number" id="phone" class="appearance-none outline-none rounded-2xl w-full placeholder:font-normal placeholder:text-black font-semibold text-sm leading-[24px]" placeholder="Write your phone number" pattern="[0-9]{8,12}" 
+                        inputmode="numeric" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length > 12) this.value = this.value.slice(0, 12);" 
+                        onkeypress="return (event.charCode != 8 && event.charCode != 0 && (event.charCode >= 48 && event.charCode <= 57))" 
+                        minlength="8" 
+                        maxlength="12" required>
                     </div>
                 </div>
             </div>
@@ -295,7 +300,7 @@
                         <label class="payment-method-option border border-[#EDEEF0] rounded-2xl p-4 flex flex-col gap-2 cursor-pointer transition-all duration-200 relative">
                             <input type="radio" name="payment_method" value="midtrans" class="absolute opacity-0">
                             <div class="flex items-center justify-center h-12">
-                                <img src="{{asset('assets/images/logos/microsoft.svg')}}" class="h-10 object-contain" alt="midtrans logo">
+                                <img src="{{asset('assets/images/logos/midtrans.png')}}" class="h-10 object-contain" alt="midtrans logo">
                             </div>
                             <div class="text-center">
                                 <p class="font-semibold">Midtrans</p>

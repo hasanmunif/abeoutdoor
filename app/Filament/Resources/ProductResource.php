@@ -51,10 +51,10 @@ class ProductResource extends Resource
                 ->minValue(0)
                 ->helperText('Jumlah stok tersedia'),
 
-                Forms\Components\Toggle::make('can_multi_quantity')
-                ->label('Multi Quantity?')
-                ->helperText('Apakah produk ini bisa disewa lebih dari 1 (seperti tenda, kompor, matras, dll)')
-                ->default(false),
+                // Forms\Components\Toggle::make('can_multi_quantity')
+                // ->label('Multi Quantity?')
+                // ->helperText('Apakah produk ini bisa disewa lebih dari 1 (seperti tenda, kompor, matras, dll)')
+                // ->default(false),
 
                 Forms\Components\FileUpload::make('thumbnail')
                 ->required()
@@ -102,9 +102,9 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('stock')
                 ->sortable()
                 ->label('Stok'),
-                Tables\Columns\IconColumn::make('can_multi_quantity')
-                ->boolean()
-                ->label('Multi Qty'),
+                // Tables\Columns\IconColumn::make('can_multi_quantity')
+                // ->boolean()
+                // ->label('Multi Qty'),
             ])
             ->filters([
                 //

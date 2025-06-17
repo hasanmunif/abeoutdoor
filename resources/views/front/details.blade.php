@@ -154,7 +154,7 @@
 						</div>
 
 						@if($product->stock <= 0)
-							<p class="text-center text-red-500 font-semibold">Stok produk habis</p>
+							<p class="text-center text-red-500 font-bold text-xl">STOK PRODUK HABIS!</p>
 						@endif
 					</div>
 				</form>

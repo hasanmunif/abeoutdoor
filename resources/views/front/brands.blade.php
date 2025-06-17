@@ -4,12 +4,15 @@
 
 	<main class="max-w-[640px] mx-auto min-h-screen flex flex-col relative has-[#Bottom-nav]:pb-[144px]">
 		<div class="flex items-center justify-between px-5 pt-5">
-			<a href="{{route('front.index')}}">
+			<a href="{{ route('front.index') }}">
 				<div class="size-[44px] flex shrink-0">
-					<img src="{{asset('assets/images/icons/arrow-left.svg')}}" alt="icon" />
+					<img src="{{ asset('assets/images/icons/arrow-left.svg') }}" alt="icon" />
 				</div>
 			</a>
-			<p class="text-lg leading-[27px] font-semibold ms-2">Choose Brand</p>
+			<div class="flex-1 text-center">
+				<p class="text-lg leading-[27px] font-semibold">Pilih Brand</p>
+			</div>
+			<div class="size-[44px]"></div>
 		</div>
 
 		<section id="Brand" class="flex flex-col gap-[30px] mt-[30px] px-5 pb-36">
@@ -22,12 +25,10 @@
 					</div>
 				</a>
                 @empty
-                <p>belum ada data brand dari kategori</p>
+					<p class="mt-10 text-gray-500">belum ada data brand</p>
                 @endforelse
 			</div>
 		</section>
-
-
 	</main>
 
 	@endsection

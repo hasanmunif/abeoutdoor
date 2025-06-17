@@ -5,8 +5,11 @@
             <a href="{{route('front.index')}}">
                 <div class="group flex flex-col items-center text-center gap-2 transition-all duration-300 hover:text-black {{ Route::is('front.index') ? 'text-black' : 'text-[#9D9DAD]' }}">
                     <div class="w-6 h-6 flex shrink-0">
-                        <img src="{{asset('assets/images/icons/search.svg')}}" alt="browse icon" class="size-full" />
-                    </div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.5 14.5L19 18" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="10.5" cy="10.5" r="7" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div> 
                     <p class="font-semibold text-sm leading-[21px]">Browse</p>
                 </div>
             </a>
@@ -35,7 +38,7 @@
             </a>
         </li>
         <li>
-            <a href="https://wa.me/6285322465959">
+            <a href="https://wa.me/6282137553914">
                 <div class="group flex flex-col items-center text-center gap-2 transition-all duration-300 hover:text-black text-[#9D9DAD]">
                     <div class="w-6 h-6 flex shrink-0">
                         <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +66,7 @@
                             />
                         </svg>
                     </div>
-                    <p class="font-semibold text-sm leading-[21px]">Contact</p>
+                    <p class="font-semibold text-sm leading-[21px]">Kontak</p>
                 </div>
             </a>
         </li>

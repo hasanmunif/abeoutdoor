@@ -10,7 +10,6 @@
             </div>
         </a>
         <p class="text-lg leading-[27px] font-semibold">Keranjang</p>
-
     </div>
 
 

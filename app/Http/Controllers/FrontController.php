@@ -32,25 +32,28 @@ class FrontController extends Controller
         // Dapatkan category_id dari session
         $category_id = session()->get('category_id');
 
-        // PERBAIKAN: Jika tidak ada category_id dalam session atau ingin menampilkan semua produk
-        // Ambil semua produk brand tanpa filter kategori
-        $products = Product::where('brand_id', $brand->id)
+        // Variabel untuk menyimpan nama kategori
+        $categoryName = null;
+
+        // Query awal untuk semua produk brand
+        $allProducts = Product::where('brand_id', $brand->id)
             ->latest()
             ->get();
 
-        // TAMBAHAN: Buat variable untuk produk dalam kategori tertentu
-        $productsInCategory = [];
+        // Filter produk berdasarkan kategori jika ada category_id
         if ($category_id) {
-            $productsInCategory = $products->where('category_id', $category_id);
+            $products = $allProducts->where('category_id', $category_id);
+            // Ambil nama kategori untuk ditampilkan
+            $category = Category::find($category_id);
+            $categoryName = $category ? $category->name : null;
+        } else {
+            $products = $allProducts;
         }
 
-        // Jika ingin tetap menampilkan filter berdasarkan kategori aktif:
-        // $products = $productsInCategory;
+        // Pastikan $products adalah collection
+        $products = collect($products);
 
-        // Atau untuk menampilkan semua produk brand tanpa batasan kategori:
-        // Tetap menggunakan $products yang sudah diambil
-
-        return view('front.gadgets', compact('brand', 'products'));
+        return view('front.gadgets', compact('brand', 'products', 'allProducts', 'categoryName'));
     }
 
     public function details(Product $product){
@@ -68,7 +71,7 @@ class FrontController extends Controller
     public function transactions_details(Request $request){
         $request->validate([
             'trx_id' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'numeric', 'digits_between:8,12'],
         ]);
 
         $trx_id = $request->input('trx_id');
@@ -146,7 +149,7 @@ class FrontController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:255',
+            'phone_number' => 'required|numeric|regex:/^[0-9]+$/|digits_between:8,12',
             'store_id' => 'required|exists:stores,id',
             'started_at' => 'required|date|after_or_equal:today',
             'proof' => 'required|image|max:2048',
